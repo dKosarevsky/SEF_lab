@@ -84,7 +84,6 @@ def precision_trapezoidal_rule(func, a, b, precision=1e-8, start_sub_ints=1):
        precision - желаемая относительная точность вычислений
        start_sub_ints - начальное число отрезков разбиения"""
     sub_ints = start_sub_ints
-    old_ans = 0.0
     dx = 1.0 * (b - a) / sub_ints
     ans = 0.5 * (func(a) + func(b))
     for i in range(1, sub_ints):
@@ -99,7 +98,7 @@ def precision_trapezoidal_rule(func, a, b, precision=1e-8, start_sub_ints=1):
         sub_ints *= 2
         err_est = abs(ans - old_ans)
 
-    return ans
+    return round(ans, 5)
 
 
 def equation_1(x):
@@ -123,7 +122,7 @@ def main():
         show_tz()
 
     integrate_type = st.radio(
-        "Выберите метод получения чисел", (
+        "Выберите метод получения вычисления интеграла", (
             "Метод трапеций с заданным шагом",
             "Метод трапеций с заданной точностью",
             "Метод точки пересечения функции с осью абсцисс на заданном интервале методом дихотомии"
