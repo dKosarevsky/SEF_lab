@@ -1,9 +1,5 @@
 import streamlit as st
-import pandas as pd
 import numpy as np
-from scipy.integrate import trapz, simps
-import math
-import sys
 
 from PIL import Image
 
@@ -46,15 +42,64 @@ def show_tz():
     """)
 
 
-def trapezoidal_rule(func, low_limit, up_limit, sub_ints):
+def trapezoidal_rule(func, low_limit: float, up_limit: float, sub_ints: int) -> float:
+    """
+        Правило трапеций для численной аппроксимации интегральной заданной функции
+    :param func: математическая функция
+    :param low_limit: нижний предел
+    :param up_limit: верхний предел
+    :param sub_ints: число отрезков, на которые разбивается
+    :return: результат вычислений
+    """
     sum_xi = 0.0
     h = (up_limit - low_limit) / sub_ints  # finding midpoint, (b-a)/n
     sum1 = func(low_limit) + func(up_limit)  # find the f(a) and f(b)
-    for i in range(1, int(sub_ints)):
+    for i in range(1, sub_ints):
         sum_xi += func(low_limit + i * h)
     fx = (h / 2) * (sum1 + 2 * sum_xi)
 
     return round(fx, 5)
+
+
+def rectangle_rule(func, a, b, sub_ints, frac):
+    """Обобщённое правило прямоугольников."""
+    dx = 1.0 * (b - a) / sub_ints
+    sum_ = 0.0
+    x_start = a + frac * dx  # 0 <= frac <= 1 задаёт долю смещения точки,
+    # в которой вычисляется функция,
+    # от левого края отрезка dx
+    for i in range(sub_ints):
+        sum_ += func(x_start + i * dx)
+
+    return sum_ * dx
+
+
+def midpoint_rectangle_rule(func, a, b, sub_ints):
+    """Правило прямоугольников со средней точкой"""
+    return rectangle_rule(func, a, b, sub_ints, 0.5)
+
+
+def precision_trapezoidal_rule(func, a, b, precision=1e-8, start_sub_ints=1):
+    """Правило трапеций
+       precision - желаемая относительная точность вычислений
+       start_sub_ints - начальное число отрезков разбиения"""
+    sub_ints = start_sub_ints
+    old_ans = 0.0
+    dx = 1.0 * (b - a) / sub_ints
+    ans = 0.5 * (func(a) + func(b))
+    for i in range(1, sub_ints):
+        ans += func(a + i * dx)
+
+    ans *= dx
+    err_est = max(1, abs(ans))
+    while err_est > abs(precision * ans):
+        old_ans = ans
+        ans = 0.5 * (ans + midpoint_rectangle_rule(func, a, b, sub_ints))  # новые точки для уточнения интеграла
+        # добавляются ровно в середины предыдущих отрезков
+        sub_ints *= 2
+        err_est = abs(ans - old_ans)
+
+    return ans
 
 
 def equation_1(x):
@@ -68,21 +113,7 @@ def equation_2(x):
     """
         cos^2(x) * ln^2(x+5)
     """
-    return np.cos(x)**2 * np.log(x + 5)**2
-
-
-# def integrate_with_scipy(x, y):
-#     """""""""
-#         finding the area under the curve
-#         http://pageperso.lif.univ-mrs.fr/~francois.denis/IAAM1/scipy-html-1.0.0/generated/scipy.integrate.trapz.html
-#
-#         data = pd.read_table("SampleData2.txt",sep="\s+")
-#         x = data["x"].values
-#         y = data["y"].values
-#         plt.plot(x,y)
-#     """""""""
-#     st.write("area under graph with trapezoidal", trapz(y, x))
-#     st.write("area under graph simpson", simps(y, x))
+    return np.cos(x) ** 2 * np.log(x + 5) ** 2
 
 
 def main():
@@ -99,17 +130,29 @@ def main():
         )
     )
     if integrate_type == "Метод трапеций с заданным шагом":
-        lower_limit = st.number_input("Input the lower limit:", value=7.0)
-        upper_limit = st.number_input("Input the upper limit:", value=15.0)
-        sub_intervals = st.number_input("Input the number of sub-intervals:", value=3)
+        upper_limit = st.number_input("Введите верхний предел:", value=15.0)
+        lower_limit = st.number_input("Введите нижний предел:", value=7.0)
+        sub_intervals = st.number_input("Введите количество шагов:", value=3)
 
         fx_eq_1 = trapezoidal_rule(equation_1, lower_limit, upper_limit, sub_intervals)
         fx_eq_2 = trapezoidal_rule(equation_2, lower_limit, upper_limit, sub_intervals)
-
         st.write(f"Результат для {equation_1.__doc__} равен {fx_eq_1}")
         st.write(f"Результат для {equation_2.__doc__} равен {fx_eq_2}")
 
-    st.button("Очистить результаты")
+    elif integrate_type == "Метод трапеций с заданной точностью":
+        upper_limit = st.number_input("Введите верхний предел:", value=15.0)
+        lower_limit = st.number_input("Введите нижний предел:", value=7.0)
+        precision = st.number_input("Введите желаемую точность:", value=1.2)
+
+        fx_eq_1 = precision_trapezoidal_rule(equation_1, lower_limit, upper_limit, precision)
+        fx_eq_2 = precision_trapezoidal_rule(equation_2, lower_limit, upper_limit, precision)
+        st.write(f"Результат для {equation_1.__doc__} равен {fx_eq_1}")
+        st.write(f"Результат для {equation_2.__doc__} равен {fx_eq_2}")
+
+    else:
+        st.markdown("Ведутся работы ... :construction_worker:")
+
+    # st.button("Очистить результаты")
 
 
 if __name__ == "__main__":
