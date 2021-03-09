@@ -1,5 +1,6 @@
 import streamlit as st
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def header():
@@ -116,16 +117,12 @@ def dichotomy_one(func, a, b, accuracy, epsilon):
 
 
 def equation_1(x):
-    """
-        sin(x)
-    """
+    """sin(x)"""
     return np.sin(x)
 
 
 def equation_2(x):
-    """
-        cos^2(x) * ln^2(x+5)
-    """
+    """cos^2(x) * ln^2(x+5)"""
     return np.cos(x) ** 2 * np.log(x + 5) ** 2
 
 
@@ -165,7 +162,32 @@ def main():
         st.write(f"Результат для {equation_2.__doc__} равен {fx_eq_2}")
 
     else:
-        st.markdown("Ведутся работы ... :construction_worker:")
+        st.markdown(":construction_worker: Ведутся технические работы ...")
+
+        # параметры метода и области
+        a = 0.3
+        b = 5
+        accuracy = 0.0001
+        epsilon = 0.0000001
+
+        # применение метода и вывод результата
+        res = dichotomy_one(equation_1, a, b, accuracy, epsilon)
+        st.write(f"Интервальная оценка минимума = {res}")
+
+        # отрисовка графика
+        x = np.arange(a, b, 0.001)
+        y = [equation_1(i) for i in x]
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+        ax.plot(x, y)
+        ax.scatter(res[0], equation_1(res[0]))
+        ax.scatter(res[1], equation_1(res[1]))
+        ax.axhline(0, color='black')
+        ax.set_title(f"Функция {equation_1.__doc__}")
+        ax.set_xlabel("$x$")
+        ax.set_ylabel("$f(x)$")
+
+        st.write(fig)
 
     # st.button("Очистить результаты")
 
