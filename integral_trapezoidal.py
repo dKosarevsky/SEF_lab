@@ -1,13 +1,10 @@
 import streamlit as st
 import numpy as np
 
-from PIL import Image
-
 
 def header():
     st.set_page_config(initial_sidebar_state="collapsed")
-    image = Image.open('logo.png')
-    st.image(image, width=100)
+    st.sidebar.image('logo.png', width=100)
     author = """
         ---
         made by [Kosarevsky Dmitry](https://github.com/dKosarevsky) 
