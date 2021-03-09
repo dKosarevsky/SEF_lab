@@ -29,7 +29,8 @@ def show_tz():
         Написать программу для приближенного вычисления определенного интеграла методами:
         * трапеций с заданным шагом, 
         * трапеций с заданной точностью, 
-        * точки пересечения выбранной пользователем функции с осью абсцисс на заданном интервале методом дихотомии. 
+        
+        Вычисления точки пересечения выбранной пользователем функции с осью абсцисс на заданном интервале методом дихотомии. 
 
         Выбранную для проверки функцию передавать как отдельный параметр подпрограмм вычисления значений функции, интеграла, корня. 
 
@@ -150,35 +151,35 @@ def main():
         show_tz()
 
     integrate_type = st.radio(
-        "Выберите метод вычисления интеграла", (
-            "Метод трапеций с заданным шагом",
-            "Метод трапеций с заданной точностью",
-            "Метод точки пересечения функции с осью абсцисс на заданном интервале методом дихотомии"
+        "Выберите необходимое вычисление", (
+            "1. Приближенное вычисление определенного интеграла методом трапеций с заданным шагом",
+            "2. Приближенное вычисление определенного интеграла методом трапеций с заданной точностью",
+            "3. Вычисление точки пересечения функции с осью абсцисс на заданном интервале методом дихотомии"
         )
     )
-    if integrate_type == "Метод трапеций с заданным шагом":
+    if integrate_type[:1] == "1":
         c1, c2, c3 = st.beta_columns(3)
         upper_limit = c1.number_input("Введите верхний предел:", value=15.0)
         lower_limit = c2.number_input("Введите нижний предел:", value=7.0)
-        sub_intervals = c3.number_input("Введите количество шагов:", min_value=1, value=3)
+        sub_intervals = c3.number_input("Введите шаг:", min_value=1, value=3)
 
         fx_eq_1 = trapezoidal_rule(equation_1, lower_limit, upper_limit, sub_intervals)
         fx_eq_2 = trapezoidal_rule(equation_2, lower_limit, upper_limit, sub_intervals)
         st.write(f"Результат для {equation_1.__doc__} равен {fx_eq_1}")
         st.write(f"Результат для {equation_2.__doc__} равен {fx_eq_2}")
 
-    elif integrate_type == "Метод трапеций с заданной точностью":
+    elif integrate_type[:1] == "2":
         c1, c2, c3 = st.beta_columns(3)
         upper_limit = c1.number_input("Введите верхний предел:", value=15.0)
         lower_limit = c2.number_input("Введите нижний предел:", value=7.0)
-        precision = c3.number_input("Введите желаемую точность:", value=1.2)
+        precision = c3.number_input("Введите точность:", value=1.2)
 
         fx_eq_1 = precision_trapezoidal_rule(equation_1, lower_limit, upper_limit, precision)
         fx_eq_2 = precision_trapezoidal_rule(equation_2, lower_limit, upper_limit, precision)
         st.write(f"Результат для {equation_1.__doc__} равен {fx_eq_1}")
         st.write(f"Результат для {equation_2.__doc__} равен {fx_eq_2}")
 
-    else:
+    elif integrate_type[:1] == "3":
         st.markdown(":construction_worker: Ведутся технические работы ...")
 
         c1, c2, c3 = st.beta_columns(3)
