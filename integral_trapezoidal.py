@@ -4,7 +4,7 @@ import numpy as np
 
 def header():
     st.set_page_config(initial_sidebar_state="collapsed")
-    st.sidebar.image('logo.png', width=100)
+    st.sidebar.image('logo.png', width=300)
     author = """
         ---
         made by [Kosarevsky Dmitry](https://github.com/dKosarevsky) 
