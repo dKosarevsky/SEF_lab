@@ -41,7 +41,7 @@ def show_tz():
     """)
 
 
-def trapezoidal_rule(func, low_limit: float, up_limit: float, sub_ints: int) -> float:
+def trapezoidal_rule(func, low_limit: float, up_limit: float, sub_ints: float) -> float:
     """
         Правило трапеций для численной аппроксимации интегральной заданной функции
     :param func: математическая функция
@@ -52,10 +52,10 @@ def trapezoidal_rule(func, low_limit: float, up_limit: float, sub_ints: int) -> 
     """
     sum_xi = 0.0
     h = (up_limit - low_limit) / sub_ints  # finding midpoint, (b-a)/n
-    sum1 = func(low_limit) + func(up_limit)  # find the f(a) and f(b)
-    for i in range(1, sub_ints):
+    sum_ = func(low_limit) + func(up_limit)  # find the f(a) and f(b)
+    for i in range(1, int(sub_ints)):
         sum_xi += func(low_limit + i * h)
-    fx = (h / 2) * (sum1 + 2 * sum_xi)
+    fx = (h / 2) * (sum_ + 2 * sum_xi)
 
     return round(fx, 5)
 
@@ -67,7 +67,7 @@ def rectangle_rule(func, a, b, sub_ints, frac):
     x_start = a + frac * dx  # 0 <= frac <= 1 задаёт долю смещения точки,
     # в которой вычисляется функция,
     # от левого края отрезка dx
-    for i in range(sub_ints):
+    for i in range(int(sub_ints)):
         sum_ += func(x_start + i * dx)
 
     return sum_ * dx
@@ -78,7 +78,7 @@ def midpoint_rectangle_rule(func, a, b, sub_ints):
     return rectangle_rule(func, a, b, sub_ints, 0.5)
 
 
-def precision_trapezoidal_rule(func, a: float, b: float, precision:float = 1e-8, start_sub_ints: int = 1) -> float:
+def precision_trapezoidal_rule(func, a: float, b: float, precision: float = 1e-8, start_sub_ints: float = 1.) -> float:
     """
         Правило трапеций
     :param func: математическая функция
@@ -91,7 +91,7 @@ def precision_trapezoidal_rule(func, a: float, b: float, precision:float = 1e-8,
     sub_ints = start_sub_ints
     dx = 1.0 * (b - a) / sub_ints
     ans = 0.5 * (func(a) + func(b))
-    for i in range(1, sub_ints):
+    for i in range(1, int(sub_ints)):
         ans += func(a + i * dx)
 
     ans *= dx
