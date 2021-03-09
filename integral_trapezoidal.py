@@ -76,10 +76,16 @@ def midpoint_rectangle_rule(func, a, b, sub_ints):
     return rectangle_rule(func, a, b, sub_ints, 0.5)
 
 
-def precision_trapezoidal_rule(func, a, b, precision=1e-8, start_sub_ints=1):
-    """Правило трапеций
-       precision - желаемая относительная точность вычислений
-       start_sub_ints - начальное число отрезков разбиения"""
+def precision_trapezoidal_rule(func, a: float, b: float, precision:float = 1e-8, start_sub_ints: int = 1) -> float:
+    """
+        Правило трапеций
+    :param func: математическая функция
+    :param a: нижний предел
+    :param b: верхний предел
+    :param precision - желаемая относительная точность вычислений
+    :param start_sub_ints - начальное число отрезков разбиения
+    :return: результат вычислений
+    """
     sub_ints = start_sub_ints
     dx = 1.0 * (b - a) / sub_ints
     ans = 0.5 * (func(a) + func(b))
