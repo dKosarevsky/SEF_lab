@@ -131,7 +131,7 @@ def main():
     if integrate_type == "Метод трапеций с заданным шагом":
         upper_limit = st.number_input("Введите верхний предел:", value=15.0)
         lower_limit = st.number_input("Введите нижний предел:", value=7.0)
-        sub_intervals = st.number_input("Введите количество шагов:", value=3)
+        sub_intervals = st.number_input("Введите количество шагов:", min_value=1, value=3)
 
         fx_eq_1 = trapezoidal_rule(equation_1, lower_limit, upper_limit, sub_intervals)
         fx_eq_2 = trapezoidal_rule(equation_2, lower_limit, upper_limit, sub_intervals)
