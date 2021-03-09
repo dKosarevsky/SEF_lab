@@ -105,7 +105,7 @@ def precision_trapezoidal_rule(func, a: float, b: float, precision:float = 1e-8,
     return round(ans, 5)
 
 
-def dichotomy_one(func, a, b, accuracy, epsilon):
+def dichotomy_one(func, a, b, accuracy=0.0001, epsilon=0.0000001):
     while b - a > accuracy:
         x = (b + a) / 2 - epsilon
         y = (b + a) / 2 + epsilon
@@ -113,7 +113,24 @@ def dichotomy_one(func, a, b, accuracy, epsilon):
             a = x
         else:
             b = y
-    return [a, b]
+    return [round(a, 5), round(b, 5)]
+
+
+def plot(func, a, b, res):
+    """ отрисовка графика """
+    x = np.arange(a, b, 0.001)
+    y = [equation_1(i) for i in x]
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+    ax.plot(x, y)
+    ax.scatter(res[0], equation_1(res[0]))
+    ax.scatter(res[1], equation_1(res[1]))
+    ax.axhline(0, color='black')
+    ax.set_title(f"Функция {func.__doc__}")
+    ax.set_xlabel("$x$")
+    ax.set_ylabel("$f(x)$")
+
+    st.write(fig)
 
 
 def equation_1(x):
