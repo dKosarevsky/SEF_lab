@@ -144,6 +144,11 @@ def equation_2(x):
     return np.cos(x) ** 2 * np.log(x + 5) ** 2
 
 
+def equation_3(x):
+    """(2 * x + 1) / sqrt(x + 1 / 16)"""
+    return (2 * x + 1) / np.sqrt(x + 1 / 16)
+
+
 def main():
     header()
 
@@ -159,32 +164,36 @@ def main():
     )
     if integrate_type[:1] == "1":
         c1, c2, c3 = st.beta_columns(3)
-        upper_limit = c1.number_input("Введите верхний предел:", value=15.0)
-        lower_limit = c2.number_input("Введите нижний предел:", value=7.0)
-        sub_intervals = c3.number_input("Введите шаг:", min_value=1, value=3)
+        lower_limit = c1.number_input("Введите нижний предел:", value=.0)
+        upper_limit = c2.number_input("Введите верхний предел:", value=1.57)
+        sub_intervals = c3.number_input("Введите шаг:", min_value=.1, value=.1)
 
         fx_eq_1 = trapezoidal_rule(equation_1, lower_limit, upper_limit, sub_intervals)
         fx_eq_2 = trapezoidal_rule(equation_2, lower_limit, upper_limit, sub_intervals)
-        st.write(f"Результат для {equation_1.__doc__} равен {fx_eq_1}")
-        st.write(f"Результат для {equation_2.__doc__} равен {fx_eq_2}")
+        fx_eq_3 = trapezoidal_rule(equation_3, lower_limit, upper_limit, sub_intervals)
+        st.write(f"Результат для {equation_1.__doc__} = {fx_eq_1}")
+        st.write(f"Результат для {equation_2.__doc__} = {fx_eq_2}")
+        st.write(f"Результат для {equation_3.__doc__} = {fx_eq_3}")
 
     elif integrate_type[:1] == "2":
         c1, c2, c3 = st.beta_columns(3)
-        upper_limit = c1.number_input("Введите верхний предел:", value=15.0)
-        lower_limit = c2.number_input("Введите нижний предел:", value=7.0)
+        lower_limit = c1.number_input("Введите нижний предел:", value=.0)
+        upper_limit = c2.number_input("Введите верхний предел:", value=1.57)
         precision = c3.number_input("Введите точность:", value=1.2)
 
         fx_eq_1 = precision_trapezoidal_rule(equation_1, lower_limit, upper_limit, precision)
         fx_eq_2 = precision_trapezoidal_rule(equation_2, lower_limit, upper_limit, precision)
-        st.write(f"Результат для {equation_1.__doc__} равен {fx_eq_1}")
-        st.write(f"Результат для {equation_2.__doc__} равен {fx_eq_2}")
+        fx_eq_3 = precision_trapezoidal_rule(equation_3, lower_limit, upper_limit, precision)
+        st.write(f"Результат для {equation_1.__doc__} = {fx_eq_1}")
+        st.write(f"Результат для {equation_2.__doc__} = {fx_eq_2}")
+        st.write(f"Результат для {equation_3.__doc__} = {fx_eq_3}")
 
     elif integrate_type[:1] == "3":
         st.markdown(":construction_worker: Ведутся технические работы ...")
 
         c1, c2, c3 = st.beta_columns(3)
-        upper_limit = c1.number_input("Введите верхний предел:", value=15.0)
-        lower_limit = c2.number_input("Введите нижний предел:", value=0.3)
+        lower_limit = c1.number_input("Введите нижний предел:", value=.0)
+        upper_limit = c2.number_input("Введите верхний предел:", value=1.57)
 
         res_1 = dichotomy_one(equation_1, lower_limit, upper_limit)
         st.write(f"Интервальная оценка минимума для {equation_1.__doc__} = {res_1}")
