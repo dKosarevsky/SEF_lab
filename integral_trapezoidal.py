@@ -104,6 +104,17 @@ def precision_trapezoidal_rule(func, a: float, b: float, precision:float = 1e-8,
     return round(ans, 5)
 
 
+def dichotomy_one(func, a, b, accuracy, epsilon):
+    while b - a > accuracy:
+        x = (b + a) / 2 - epsilon
+        y = (b + a) / 2 + epsilon
+        if func(x) > func(y):
+            a = x
+        else:
+            b = y
+    return [a, b]
+
+
 def equation_1(x):
     """
         sin(x)
