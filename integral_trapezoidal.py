@@ -181,30 +181,17 @@ def main():
     else:
         st.markdown(":construction_worker: Ведутся технические работы ...")
 
-        # параметры метода и области
-        a = 0.3
-        b = 5
-        accuracy = 0.0001
-        epsilon = 0.0000001
+        c1, c2, c3 = st.beta_columns(3)
+        upper_limit = c1.number_input("Введите верхний предел:", value=15.0)
+        lower_limit = c2.number_input("Введите нижний предел:", value=0.3)
 
-        # применение метода и вывод результата
-        res = dichotomy_one(equation_1, a, b, accuracy, epsilon)
-        st.write(f"Интервальная оценка минимума = {res}")
+        res_1 = dichotomy_one(equation_1, lower_limit, upper_limit)
+        st.write(f"Интервальная оценка минимума для {equation_1.__doc__} = {res_1}")
+        plot(equation_1, lower_limit, upper_limit, res_1)
 
-        # отрисовка графика
-        x = np.arange(a, b, 0.001)
-        y = [equation_1(i) for i in x]
-        fig = plt.figure()
-        ax = fig.add_subplot(1, 1, 1)
-        ax.plot(x, y)
-        ax.scatter(res[0], equation_1(res[0]))
-        ax.scatter(res[1], equation_1(res[1]))
-        ax.axhline(0, color='black')
-        ax.set_title(f"Функция {equation_1.__doc__}")
-        ax.set_xlabel("$x$")
-        ax.set_ylabel("$f(x)$")
-
-        st.write(fig)
+        res_2 = dichotomy_one(equation_2, lower_limit, upper_limit)
+        st.write(f"Интервальная оценка минимума для {equation_2.__doc__} = {res_2}")
+        plot(equation_2, lower_limit, upper_limit, res_2)
 
     # st.button("Очистить результаты")
 
