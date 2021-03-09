@@ -126,9 +126,10 @@ def main():
         )
     )
     if integrate_type == "Метод трапеций с заданным шагом":
-        upper_limit = st.number_input("Введите верхний предел:", value=15.0)
-        lower_limit = st.number_input("Введите нижний предел:", value=7.0)
-        sub_intervals = st.number_input("Введите количество шагов:", min_value=1, value=3)
+        c1, c2, c3 = st.beta_columns(3)
+        upper_limit = c1.number_input("Введите верхний предел:", value=15.0)
+        lower_limit = c2.number_input("Введите нижний предел:", value=7.0)
+        sub_intervals = c3.number_input("Введите количество шагов:", min_value=1, value=3)
 
         fx_eq_1 = trapezoidal_rule(equation_1, lower_limit, upper_limit, sub_intervals)
         fx_eq_2 = trapezoidal_rule(equation_2, lower_limit, upper_limit, sub_intervals)
@@ -136,9 +137,10 @@ def main():
         st.write(f"Результат для {equation_2.__doc__} равен {fx_eq_2}")
 
     elif integrate_type == "Метод трапеций с заданной точностью":
-        upper_limit = st.number_input("Введите верхний предел:", value=15.0)
-        lower_limit = st.number_input("Введите нижний предел:", value=7.0)
-        precision = st.number_input("Введите желаемую точность:", value=1.2)
+        c1, c2, c3 = st.beta_columns(3)
+        upper_limit = c1.number_input("Введите верхний предел:", value=15.0)
+        lower_limit = c2.number_input("Введите нижний предел:", value=7.0)
+        precision = c3.number_input("Введите желаемую точность:", value=1.2)
 
         fx_eq_1 = precision_trapezoidal_rule(equation_1, lower_limit, upper_limit, precision)
         fx_eq_2 = precision_trapezoidal_rule(equation_2, lower_limit, upper_limit, precision)
