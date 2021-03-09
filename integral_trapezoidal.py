@@ -130,6 +130,7 @@ def plot(func, a, b, res):
     ax.set_title(f"Функция {func.__doc__}")
     ax.set_xlabel("$x$")
     ax.set_ylabel("$f(x)$")
+    ax.grid(True)
 
     st.write(fig)
 
