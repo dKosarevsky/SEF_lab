@@ -106,26 +106,15 @@ def precision_trapezoidal_rule(func, a: float, b: float, precision: float = 1e-8
     return round(ans, 5)
 
 
-def dichotomy_one(func, a, b, accuracy=0.0001, epsilon=0.0000001):
-    while b - a > accuracy:
-        x = (b + a) / 2 - epsilon
-        y = (b + a) / 2 + epsilon
-        if func(x) > func(y):
-            a = x
-        else:
-            b = y
-    return [round(a, 5), round(b, 5)]
-
-
-def plot(func, a, b, res):
+def plot(func, a, b, zero):
     """ отрисовка графика """
     x = np.arange(a, b, 0.001)
     y = [func(i) for i in x]
     fig = plt.figure()
     ax = fig.add_subplot(1, 1, 1)
     ax.plot(x, y)
-    ax.scatter(res[0], func(res[0]))
-    ax.scatter(res[1], func(res[1]))
+    if zero:
+        ax.scatter(zero, 0)
     ax.axhline(0, color='black')
     ax.set_title(f"Функция {func.__doc__}")
     ax.set_xlabel("$x$")
@@ -145,32 +134,75 @@ def equation_2(x):
     return np.cos(x) ** 2 * np.log(x + 5) ** 2
 
 
+def equation_3(x):
+    """x/2 - sin(x) + pi/6 - ((3**(1/2)) / 2)"""
+    return x / 2 - np.sin(x) + np.pi / 6 - ((3 ** (1 / 2)) / 2)
+
+
+def dichotomy(f, a, b, tol):
+    niter = 0
+    inc = []
+    y = (a + b) / 2
+
+    if f(a) * f(b) < 0:
+        while abs(b - a) > tol:
+            x = (a + b) / 2
+            inc.append(abs(x - y))
+            y = x
+            niter += 1
+            if f(a) * f(x) <= 0:
+                b = x
+            else:
+                a = x
+        zero = (a + b) / 2
+        res = f(zero)
+        err = abs(a - b)
+        st.write(f"Функция {f.__doc__} пересекает ось абсцисс в точке [{round(zero, 2)}, 0]")
+        # st.write(f"Остальная часть функции в нулевой точке: f (zero) = {res}")
+        # st.write(f"Количество итераций: niter = {niter}")
+        # st.write(f"Вектор, содержащий остатки на каждой итерации: inc = {inc}")
+        # st.write(f"Длина последнего интервала: err = {err}")
+        return zero
+    elif f(a) * f(b) > 0:
+        st.error(f"Невозможно применить метод дихотомии для функции {f.__doc__} на интервале [{a}, {b}]")
+
+    else:
+        if f(a) == 0:
+            st.write(f"Нуль функции {f.__doc__} на [{a}, {b}] над точкой [{round(a, 2)}, 0]")
+            return a
+        else:
+            st.write(f"Нуль функции {f.__doc__} на [{a}, {b}] b = [{round(b, 2)}, 0]")
+            return b
+
+
 def main():
     header()
 
     if st.checkbox("Показать ТЗ"):
         show_tz()
 
-    integrate_type = st.radio(
+    calc_type = st.radio(
         "Выберите необходимое вычисление", (
             "1. Приближенное вычисление определенного интеграла методом трапеций с заданным шагом",
             "2. Приближенное вычисление определенного интеграла методом трапеций с заданной точностью",
             "3. Вычисление точки пересечения функции с осью абсцисс на заданном интервале методом дихотомии"
         )
     )
-    if integrate_type[:1] == "1":
+    if calc_type[:1] == "1":
+        st.write(calc_type[3:])
         c1, c2, c3 = st.beta_columns(3)
         lower_limit = c1.number_input("Введите нижний предел:", value=1.)
         upper_limit = c2.number_input("Введите верхний предел:", value=1.57)
         sub_intervals = c3.number_input("Введите шаг:", min_value=.1, value=.1)
 
         fx_eq_1 = trapezoidal_rule(equation_1, lower_limit, upper_limit, sub_intervals)
-        st.write(f"Результат для {equation_1.__doc__} = {fx_eq_1}")\
+        st.write(f"Результат для {equation_1.__doc__} = {fx_eq_1}")
 
         fx_eq_2 = trapezoidal_rule(equation_2, lower_limit, upper_limit, sub_intervals)
         st.write(f"Результат для {equation_2.__doc__} = {fx_eq_2}")
 
-    elif integrate_type[:1] == "2":
+    elif calc_type[:1] == "2":
+        st.write(calc_type[3:])
         c1, c2, c3 = st.beta_columns(3)
         lower_limit = c1.number_input("Введите нижний предел:", value=.0)
         upper_limit = c2.number_input("Введите верхний предел:", value=1.57)
@@ -182,22 +214,22 @@ def main():
         fx_eq_2 = precision_trapezoidal_rule(equation_2, lower_limit, upper_limit, precision)
         st.write(f"Результат для {equation_2.__doc__} = {fx_eq_2}")
 
-    elif integrate_type[:1] == "3":
-        st.markdown(":construction_worker: Ведутся технические работы ...")
-
+    elif calc_type[:1] == "3":
+        st.write(calc_type[3:])
         c1, c2, c3 = st.beta_columns(3)
-        lower_limit = c1.number_input("Введите нижний предел:", value=.0)
-        upper_limit = c2.number_input("Введите верхний предел:", value=1.57)
+        start_interval = c1.number_input("Начало интервала (a):", value=-5.0)
+        end_interval = c2.number_input("Конец интервала (b):", value=12.5)
+        epsilon = c3.number_input("Эпсилон (е):", min_value=.00000000000000000001, value=.00001)
+        st.write(f"Значение Эпсилон = {epsilon}")
 
-        res_1 = dichotomy_one(equation_1, lower_limit, upper_limit)
-        st.write(f"Интервальная оценка минимума для {equation_1.__doc__} = {res_1}")
-        plot(equation_1, lower_limit, upper_limit, res_1)
+        zero_1 = dichotomy(equation_1, start_interval, end_interval, epsilon)
+        plot(equation_1, start_interval, end_interval, zero_1)
 
-        res_2 = dichotomy_one(equation_2, lower_limit, upper_limit)
-        st.write(f"Интервальная оценка минимума для {equation_2.__doc__} = {res_2}")
-        plot(equation_2, lower_limit, upper_limit, res_2)
+        zero_2 = dichotomy(equation_2, start_interval, end_interval, epsilon)
+        plot(equation_2, start_interval, end_interval, zero_2)
 
-    # st.button("Очистить результаты")
+        zero_3 = dichotomy(equation_3, start_interval, end_interval, epsilon)
+        plot(equation_3, start_interval, end_interval, zero_3)
 
 
 if __name__ == "__main__":
