@@ -41,69 +41,72 @@ def show_tz():
     """)
 
 
-def trapezoidal_rule(func, low_limit: float, up_limit: float, sub_ints: float) -> float:
+def trapezoidal_rule(func, low_limit: float, up_limit: float, intervals: float) -> float:
     """
         Правило трапеций для численной аппроксимации интегральной заданной функции
     :param func: математическая функция
-    :param low_limit: нижний предел
-    :param up_limit: верхний предел
-    :param sub_ints: число отрезков, на которые разбивается
+    :param low_limit: нижний предел интегрирования
+    :param up_limit: верхний предел интегрирования
+    :param intervals: число отрезков, на которые разбивается
     :return: результат вычислений
     """
     sum_xi = 0.0
-    h = (up_limit - low_limit) / sub_ints  # finding midpoint, (b-a)/n
+    h = (up_limit - low_limit) / intervals  # finding midpoint, (b-a)/n
     sum_ = func(low_limit) + func(up_limit)  # find the f(a) and f(b)
-    for i in range(1, int(sub_ints)):
+    for i in range(1, int(intervals)):
         sum_xi += func(low_limit + i * h)
     fx = (h / 2) * (sum_ + 2 * sum_xi)
 
     return round(fx, 5)
 
 
-def rectangle_rule(func, a, b, sub_ints, frac):
-    """Обобщённое правило прямоугольников."""
-    dx = 1.0 * (b - a) / sub_ints
-    sum_ = 0.0
-    x_start = a + frac * dx  # 0 <= frac <= 1 задаёт долю смещения точки,
-    # в которой вычисляется функция,
-    # от левого края отрезка dx
-    for i in range(int(sub_ints)):
-        sum_ += func(x_start + i * dx)
-
-    return sum_ * dx
-
-
-def midpoint_rectangle_rule(func, a, b, sub_ints):
-    """Правило прямоугольников со средней точкой"""
-    return rectangle_rule(func, a, b, sub_ints, 0.5)
-
-
-def precision_trapezoidal_rule(func, a: float, b: float, precision: float = 1e-8, start_sub_ints: float = 1.) -> float:
+def precision_trapezoidal_rule(func, low_lim: float, up_lim: float, max_err: float = .1, intervals: int = 1) -> float:
     """
-        Правило трапеций
+        Правило трапеций с заданной точностью
     :param func: математическая функция
-    :param a: нижний предел
-    :param b: верхний предел
-    :param precision - желаемая относительная точность вычислений
-    :param start_sub_ints - начальное число отрезков разбиения
+    :param low_lim: нижний предел интегрирования
+    :param up_lim: верхний предел интегрирования
+    :param max_err: заданная точность
+    :param intervals: число отрезков, на которые разбивается
     :return: результат вычислений
     """
-    sub_ints = start_sub_ints
-    dx = 1.0 * (b - a) / sub_ints
-    ans = 0.5 * (func(a) + func(b))
-    for i in range(1, int(sub_ints)):
-        ans += func(a + i * dx)
+    dx = (up_lim - low_lim) / intervals
+    total = 0
 
-    ans *= dx
-    err_est = max(1, abs(ans))
-    while err_est > abs(precision * ans):
-        old_ans = ans
-        ans = 0.5 * (ans + midpoint_rectangle_rule(func, a, b, sub_ints))  # новые точки для уточнения интеграла
-        # добавляются ровно в середины предыдущих отрезков
-        sub_ints *= 2
-        err_est = abs(ans - old_ans)
+    # выполняем интеграцию
+    x = low_lim
+    for interval in range(intervals):
+        # добавляем область трапеции для этого среза
+        total += slice_area(func, x, x + dx, max_err)
 
-    return round(ans, 5)
+        # переходим к следующему срезу
+        x += dx
+
+    return round(total, 5)
+
+
+def slice_area(function, x1, x2, max_error):
+    # вычисляем функцию в конечных и средних точках
+    y1 = function(x1)
+    y2 = function(x2)
+    xm = (x1 + x2) / 2
+    ym = function(xm)
+
+    # рассчитываем площади срезов и самого большого участка
+    large = (x2 - x1) * (y1 + y2) / 2
+    first = (xm - x1) * (y1 + ym) / 2
+    second = (x2 - xm) * (y2 + ym) / 2
+    both = first + second
+
+    # рассчитываем ошибку
+    error = (both - large) / large
+
+    # сравниваем ошибку с допустимым значением ошибки (точности)
+    if abs(error) < max_error:
+        return both
+
+    # если ошибка больше допустимого значения - делим ее на две части (два среза)
+    return slice_area(function, x1, xm, max_error) + slice_area(function, xm, x2, max_error)
 
 
 def plot(func, a, b, zero):
@@ -155,8 +158,8 @@ def dichotomy(f, a, b, tol):
             else:
                 a = x
         zero = (a + b) / 2
-        res = f(zero)
-        err = abs(a - b)
+        # res = f(zero)
+        # err = abs(a - b)
         st.write(f"Функция {f.__doc__} пересекает ось абсцисс в точке [{round(zero, 2)}, 0]")
         # st.write(f"Остальная часть функции в нулевой точке: f (zero) = {res}")
         # st.write(f"Количество итераций: niter = {niter}")
@@ -188,10 +191,13 @@ def main():
             "3. Вычисление точки пересечения функции с осью абсцисс на заданном интервале методом дихотомии"
         )
     )
+
+    st.markdown("---")
+
     if calc_type[:1] == "1":
         st.write(calc_type[3:])
         c1, c2, c3 = st.beta_columns(3)
-        lower_limit = c1.number_input("Введите нижний предел:", value=1.)
+        lower_limit = c1.number_input("Введите нижний предел:", value=.0)
         upper_limit = c2.number_input("Введите верхний предел:", value=1.57)
         sub_intervals = c3.number_input("Введите шаг:", min_value=.1, value=.1)
 
@@ -206,7 +212,7 @@ def main():
         c1, c2, c3 = st.beta_columns(3)
         lower_limit = c1.number_input("Введите нижний предел:", value=.0)
         upper_limit = c2.number_input("Введите верхний предел:", value=1.57)
-        precision = c3.number_input("Введите точность:", value=1.2)
+        precision = c3.number_input("Введите точность:", value=.1)
 
         fx_eq_1 = precision_trapezoidal_rule(equation_1, lower_limit, upper_limit, precision)
         st.write(f"Результат для {equation_1.__doc__} = {fx_eq_1}")
