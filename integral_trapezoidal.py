@@ -51,8 +51,8 @@ def trapezoidal_rule(func, low_limit: float, up_limit: float, intervals: float) 
     :return: результат вычислений
     """
     sum_xi = 0.0
-    h = (up_limit - low_limit) / intervals  # finding midpoint, (b-a)/n
-    sum_ = func(low_limit) + func(up_limit)  # find the f(a) and f(b)
+    h = (up_limit - low_limit) / intervals  # находим середины, (b-a)/n
+    sum_ = func(low_limit) + func(up_limit)  # находим f(a) и f(b)
     for i in range(1, int(intervals)):
         sum_xi += func(low_limit + i * h)
     fx = (h / 2) * (sum_ + 2 * sum_xi)
