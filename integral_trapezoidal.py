@@ -199,7 +199,7 @@ def main():
         c1, c2, c3 = st.beta_columns(3)
         lower_limit = c1.number_input("Введите нижний предел:", value=.0)
         upper_limit = c2.number_input("Введите верхний предел:", value=1.57)
-        sub_intervals = c3.number_input("Введите шаг:", min_value=.1, value=.1)
+        sub_intervals = c3.number_input("Введите шаг:", min_value=.00000000001, value=.1)
 
         fx_eq_1 = trapezoidal_rule(equation_1, lower_limit, upper_limit, sub_intervals)
         st.write(f"Результат для {equation_1.__doc__} = {fx_eq_1}")
@@ -225,7 +225,7 @@ def main():
         c1, c2, c3 = st.beta_columns(3)
         start_interval = c1.number_input("Начало интервала (a):", value=-5.0)
         end_interval = c2.number_input("Конец интервала (b):", value=12.5)
-        epsilon = c3.number_input("Эпсилон (е):", min_value=.00000000000000000001, value=.00001)
+        epsilon = c3.number_input("Эпсилон (е):", min_value=.00000000001, value=.00001)
         st.write(f"Значение Эпсилон = {epsilon}")
 
         zero_1 = dichotomy(equation_1, start_interval, end_interval, epsilon)
