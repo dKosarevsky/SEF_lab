@@ -50,14 +50,23 @@ def trapezoidal_rule(func, low_limit: float, up_limit: float, intervals: float) 
     :param intervals: число отрезков, на которые разбивается
     :return: результат вычислений
     """
-    sum_xi = 0.0
     h = (up_limit - low_limit) / intervals  # находим середины, (b-a)/n
-    sum_ = func(low_limit) + func(up_limit)  # находим f(a) и f(b)
+    area = (func(low_limit) + func(up_limit)) / 2.0  # находим площадьб
     for i in range(1, int(intervals)):
-        sum_xi += func(low_limit + i * h)
-    fx = (h / 2) * (sum_ + 2 * sum_xi)
+        area += func(low_limit + i * h)
+    area *= h
+    return round(area, 5)
 
-    return round(fx, 5)
+
+def trapezoidal_rule3(f, a, b, n):
+    h = (b - a) / n
+    area = (f(a) + f(b)) / 2.0
+    for i in range(1, int(n)):
+        x = a + i * h
+        area = area + f(x)
+    area = area * h
+
+    return area
 
 
 def precision_trapezoidal_rule(func, low_lim: float, up_lim: float, max_err: float = .1, intervals: int = 1) -> float:
@@ -199,7 +208,7 @@ def main():
         c1, c2, c3 = st.beta_columns(3)
         lower_limit = c1.number_input("Введите нижний предел:", value=.0)
         upper_limit = c2.number_input("Введите верхний предел:", value=1.57)
-        sub_intervals = c3.number_input("Введите шаг:", min_value=.00000000001, value=.1)
+        sub_intervals = c3.number_input("Введите шаг:", min_value=.00000000001, value=.1, format="%.10f")
 
         fx_eq_1 = trapezoidal_rule(equation_1, lower_limit, upper_limit, sub_intervals)
         st.write(f"Результат для {equation_1.__doc__} = {fx_eq_1}")
@@ -212,7 +221,7 @@ def main():
         c1, c2, c3 = st.beta_columns(3)
         lower_limit = c1.number_input("Введите нижний предел:", value=.0)
         upper_limit = c2.number_input("Введите верхний предел:", value=1.57)
-        precision = c3.number_input("Введите точность:", value=.1)
+        precision = c3.number_input("Введите точность:", value=.1, format="%.10f")
 
         fx_eq_1 = precision_trapezoidal_rule(equation_1, lower_limit, upper_limit, precision)
         st.write(f"Результат для {equation_1.__doc__} = {fx_eq_1}")
@@ -225,8 +234,7 @@ def main():
         c1, c2, c3 = st.beta_columns(3)
         start_interval = c1.number_input("Начало интервала (a):", value=-5.0)
         end_interval = c2.number_input("Конец интервала (b):", value=12.5)
-        epsilon = c3.number_input("Эпсилон (е):", min_value=.00000000001, value=.00001)
-        st.write(f"Значение Эпсилон = {epsilon}")
+        epsilon = c3.number_input("Эпсилон (е):", min_value=.00000000001, value=.00001, format="%.10f")
 
         zero_1 = dichotomy(equation_1, start_interval, end_interval, epsilon)
         plot(equation_1, start_interval, end_interval, zero_1)
