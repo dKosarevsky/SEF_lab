@@ -50,23 +50,12 @@ def trapezoidal_rule(func, low_limit: float, up_limit: float, intervals: float) 
     :param intervals: число отрезков, на которые разбивается
     :return: результат вычислений
     """
-    h = (up_limit - low_limit) / intervals  # находим середины, (b-a)/n
-    area = (func(low_limit) + func(up_limit)) / 2.0  # находим площадьб
-    for i in range(1, int(intervals)):
-        area += func(low_limit + i * h)
-    area *= h
-    return round(area, 5)
-
-
-def trapezoidal_rule3(f, a, b, n):
-    h = (b - a) / n
-    area = (f(a) + f(b)) / 2.0
-    for i in range(1, int(n)):
-        x = a + i * h
-        area = area + f(x)
-    area = area * h
-
-    return area
+    area = .5 * (func(low_limit) + func(up_limit))
+    x = low_limit + intervals
+    while x <= up_limit - intervals:
+        area += func(x)
+        x += intervals
+    return intervals * area
 
 
 def precision_trapezoidal_rule(func, low_lim: float, up_lim: float, max_err: float = .1, intervals: int = 1) -> float:
@@ -167,13 +156,7 @@ def dichotomy(f, a, b, tol):
             else:
                 a = x
         zero = (a + b) / 2
-        # res = f(zero)
-        # err = abs(a - b)
         st.write(f"Функция {f.__doc__} пересекает ось абсцисс в точке [{round(zero, 2)}, 0]")
-        # st.write(f"Остальная часть функции в нулевой точке: f (zero) = {res}")
-        # st.write(f"Количество итераций: niter = {niter}")
-        # st.write(f"Вектор, содержащий остатки на каждой итерации: inc = {inc}")
-        # st.write(f"Длина последнего интервала: err = {err}")
         return zero
     elif f(a) * f(b) > 0:
         st.error(f"Невозможно применить метод дихотомии для функции {f.__doc__} на интервале [{a}, {b}]")
@@ -208,7 +191,7 @@ def main():
         c1, c2, c3 = st.beta_columns(3)
         lower_limit = c1.number_input("Введите нижний предел:", value=.0)
         upper_limit = c2.number_input("Введите верхний предел:", value=1.57)
-        sub_intervals = c3.number_input("Введите шаг:", min_value=.00000000001, value=.1, format="%.10f")
+        sub_intervals = c3.number_input("Введите шаг:", min_value=.00000000001, value=.01, format="%.8f")
 
         fx_eq_1 = trapezoidal_rule(equation_1, lower_limit, upper_limit, sub_intervals)
         st.write(f"Результат для {equation_1.__doc__} = {fx_eq_1}")
@@ -221,7 +204,7 @@ def main():
         c1, c2, c3 = st.beta_columns(3)
         lower_limit = c1.number_input("Введите нижний предел:", value=.0)
         upper_limit = c2.number_input("Введите верхний предел:", value=1.57)
-        precision = c3.number_input("Введите точность:", value=.1, format="%.10f")
+        precision = c3.number_input("Введите точность:", value=.1, format="%.8f")
 
         fx_eq_1 = precision_trapezoidal_rule(equation_1, lower_limit, upper_limit, precision)
         st.write(f"Результат для {equation_1.__doc__} = {fx_eq_1}")
@@ -234,7 +217,7 @@ def main():
         c1, c2, c3 = st.beta_columns(3)
         start_interval = c1.number_input("Начало интервала (a):", value=-5.0)
         end_interval = c2.number_input("Конец интервала (b):", value=12.5)
-        epsilon = c3.number_input("Эпсилон (е):", min_value=.00000000001, value=.00001, format="%.10f")
+        epsilon = c3.number_input("Эпсилон (е):", min_value=.00000000001, value=.00001, format="%.8f")
 
         zero_1 = dichotomy(equation_1, start_interval, end_interval, epsilon)
         plot(equation_1, start_interval, end_interval, zero_1)
