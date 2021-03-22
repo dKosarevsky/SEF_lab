@@ -1,6 +1,8 @@
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
+import plotly.express as px
+import plotly.graph_objects as go
 
 
 def header():
@@ -111,17 +113,31 @@ def plot(func, a, b, zero):
     """ отрисовка графика """
     x = np.arange(a, b, 0.001)
     y = [func(i) for i in x]
-    fig = plt.figure()
-    ax = fig.add_subplot(1, 1, 1)
-    ax.plot(x, y)
-    if zero:
-        ax.scatter(zero, 0)
-    ax.axhline(0, color='black')
-    ax.set_title(f"Функция {func.__doc__}")
-    ax.set_xlabel("$x$")
-    ax.set_ylabel("$f(x)$")
-    ax.grid(True)
 
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=x,
+        y=y,
+        mode='lines',
+    ))
+    if zero:
+        fig.add_trace(go.Scatter(
+            x=[zero],
+            y=[0],
+            marker=dict(
+                size=10,
+                line=dict(
+                    width=2
+                )
+            ),
+            showlegend=False
+        ))
+    fig.update_layout(
+        title_text=f"Функция {func.__doc__}",
+        xaxis_title='x',
+        yaxis_title='f(x)',
+        showlegend=False
+    )
     st.write(fig)
 
 
