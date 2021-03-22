@@ -210,10 +210,10 @@ def main():
         sub_intervals = c3.number_input("Введите шаг:", min_value=.00000000001, value=.01, format="%.8f")
 
         fx_eq_1 = trapezoidal_rule(equation_1, lower_limit, upper_limit, sub_intervals)
-        st.write(f"Результат для {equation_1.__doc__} = {fx_eq_1}")
+        st.write(f"Результат для {equation_1.__doc__} = {round(fx_eq_1, 5)}")
 
         fx_eq_2 = trapezoidal_rule(equation_2, lower_limit, upper_limit, sub_intervals)
-        st.write(f"Результат для {equation_2.__doc__} = {fx_eq_2}")
+        st.write(f"Результат для {equation_2.__doc__} = {round(fx_eq_2, 5)}")
 
     elif calc_type[:1] == "2":
         st.write(calc_type[3:])
@@ -223,10 +223,10 @@ def main():
         precision = c3.number_input("Введите точность:", value=.1, format="%.8f")
 
         fx_eq_1 = precision_trapezoidal_rule(equation_1, lower_limit, upper_limit, precision)
-        st.write(f"Результат для {equation_1.__doc__} = {fx_eq_1}")
+        st.write(f"Результат для {equation_1.__doc__} = {round(fx_eq_1, 5)}")
 
         fx_eq_2 = precision_trapezoidal_rule(equation_2, lower_limit, upper_limit, precision)
-        st.write(f"Результат для {equation_2.__doc__} = {fx_eq_2}")
+        st.write(f"Результат для {equation_2.__doc__} = {round(fx_eq_2, 5)}")
 
     elif calc_type[:1] == "3":
         st.write(calc_type[3:])
