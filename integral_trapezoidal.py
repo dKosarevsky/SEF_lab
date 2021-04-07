@@ -1,6 +1,7 @@
 import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
+import matplotlib.pyplot as plt
 
 
 def header():
@@ -137,6 +138,7 @@ def plot(func, a, b, zero):
         showlegend=False
     )
     st.write(fig)
+    st.markdown("---")
 
 
 def equation_1(x):
@@ -149,9 +151,19 @@ def equation_2(x):
     return np.cos(x) ** 2 * np.log(x + 5) ** 2
 
 
-def equation_3(x):
+def equation_3(x, a1=1, a2=2, a3=3, a4=4, a5=5, a6=6, a7=7, a8=8, a9=9):
+    """a1 * x^8 + a2 * x^7 + a3 * x^6 + a4 * x^5 + a5 * x^4 + a6 * x^3 + a7 * x^2 + a8 * x + a9"""
+    return a1 * x**8 + a2 * x**7 + a3 * x**6 + a4 * x**5 + a5 * x**4 + a6 * x**3 + a7 * x**2 + a8 * x + a9
+
+
+def equation_4(x):
     """x/2 - sin(x) + pi/6 - ((3**(1/2)) / 2)"""
     return x / 2 - np.sin(x) + np.pi / 6 - ((3 ** (1 / 2)) / 2)
+
+
+def equation_5(x, a1=-507.5, a2=5386.9, a3=11357.9):
+    """a1 * x^2 + a2 * x + a3"""
+    return a1 * x**2 + a2 * x + a3
 
 
 def dichotomy(f, a, b, tol):
@@ -184,6 +196,42 @@ def dichotomy(f, a, b, tol):
             return b
 
 
+def trapezoidal_main(equation, start, end, intervals):
+    result = trapezoidal_rule(equation, start, end, intervals)
+    st.write(f"Результат для {equation.__doc__} = {round(result, 5)}")
+    st.button(f"🚧 Сохранить 🚧")
+
+
+def trapezoidal_p_main(equation, start, end, p):
+    result = precision_trapezoidal_rule(equation, start, end, p)
+    st.write(f"Результат для {equation.__doc__} = {round(result, 5)}")
+    st.button(f"🚧 Сохранить 🚧")
+
+
+def dichotomy_and_plot(equation, start, end, eps):
+    zero = dichotomy(equation, start, end, eps)
+    plot(equation, start, end, zero)
+
+
+def poly_values():
+    values = st.radio("Значения полинома", ('a. По-умолчанию', 'b. Ввести вручную'))
+    if values[:1] == "b":
+        st.write("Введите значения полинома:")
+        c1, c2, c3 = st.beta_columns(3)
+        c4, c5, c6 = st.beta_columns(3)
+        c7, c8, c9 = st.beta_columns(3)
+        a1 = c1.number_input("a1:")
+        a2 = c2.number_input("a2:")
+        a3 = c3.number_input("a3:")
+        a4 = c4.number_input("a4:")
+        a5 = c5.number_input("a5:")
+        a6 = c6.number_input("a6:")
+        a7 = c7.number_input("a7:")
+        a8 = c8.number_input("a8:")
+        a9 = c9.number_input("a9:")
+        st.markdown("🚧 under constructions 🚧")
+
+
 def main():
     header()
 
@@ -207,11 +255,28 @@ def main():
         upper_limit = c2.number_input("Введите верхний предел:", value=1.57)
         sub_intervals = c3.number_input("Введите шаг:", min_value=.00000000001, value=.01, format="%.8f")
 
-        fx_eq_1 = trapezoidal_rule(equation_1, lower_limit, upper_limit, sub_intervals)
-        st.write(f"Результат для {equation_1.__doc__} = {round(fx_eq_1, 5)}")
+        st.markdown("---")
+        trapezoid = st.radio("Выберите функцию", (
+            f"1. {equation_1.__doc__}",
+            f"2. {equation_2.__doc__}",
+            f"3. {equation_3.__doc__}",
+            f"0. Загрузить из файла",
+        ))
+        if trapezoid[:1] == "1":
+            trapezoidal_main(equation_1, lower_limit, upper_limit, sub_intervals)
 
-        fx_eq_2 = trapezoidal_rule(equation_2, lower_limit, upper_limit, sub_intervals)
-        st.write(f"Результат для {equation_2.__doc__} = {round(fx_eq_2, 5)}")
+        elif trapezoid[:1] == "2":
+            trapezoidal_main(equation_2, lower_limit, upper_limit, sub_intervals)
+
+        elif trapezoid[:1] == "3":
+            poly_values()
+            trapezoidal_main(equation_3, lower_limit, upper_limit, sub_intervals)
+
+        elif trapezoid[:1] == "0":
+            st.markdown("🚧 under constructions 🚧")
+            st.button(f"Загрузить")
+            # trapezoidal_main(equation_loaded, lower_limit, upper_limit, sub_intervals)
+            st.markdown("🚧 under constructions 🚧")
 
     elif calc_type[:1] == "2":
         st.write(calc_type[3:])
@@ -220,11 +285,27 @@ def main():
         upper_limit = c2.number_input("Введите верхний предел:", value=1.57)
         precision = c3.number_input("Введите точность:", value=.1, format="%.8f")
 
-        fx_eq_1 = precision_trapezoidal_rule(equation_1, lower_limit, upper_limit, precision)
-        st.write(f"Результат для {equation_1.__doc__} = {round(fx_eq_1, 5)}")
+        trapezoid_p = st.radio("Выберите функцию", (
+            f"1. {equation_1.__doc__}",
+            f"2. {equation_2.__doc__}",
+            f"3. {equation_3.__doc__}",
+            f"0. Загрузить из файла",
+        ))
+        if trapezoid_p[:1] == "1":
+            trapezoidal_p_main(equation_1, lower_limit, upper_limit, precision)
 
-        fx_eq_2 = precision_trapezoidal_rule(equation_2, lower_limit, upper_limit, precision)
-        st.write(f"Результат для {equation_2.__doc__} = {round(fx_eq_2, 5)}")
+        elif trapezoid_p[:1] == "2":
+            trapezoidal_p_main(equation_2, lower_limit, upper_limit, precision)
+
+        elif trapezoid_p[:1] == "3":
+            poly_values()
+            trapezoidal_p_main(equation_3, lower_limit, upper_limit, precision)
+
+        elif trapezoid_p[:1] == "0":
+            st.markdown("🚧 under constructions 🚧")
+            st.button(f"Загрузить")
+            # trapezoidal_p_main(equation_loaded, lower_limit, upper_limit, sub_intervals)
+            st.markdown("🚧 under constructions 🚧")
 
     elif calc_type[:1] == "3":
         st.write(calc_type[3:])
@@ -233,14 +314,36 @@ def main():
         end_interval = c2.number_input("Конец интервала (b):", value=12.5)
         epsilon = c3.number_input("Эпсилон (е):", min_value=.00000000001, value=.00001, format="%.8f")
 
-        zero_1 = dichotomy(equation_1, start_interval, end_interval, epsilon)
-        plot(equation_1, start_interval, end_interval, zero_1)
+        st.markdown("---")
+        func_to_plot = st.radio("Выберите функцию", (
+            f"1. {equation_1.__doc__}",
+            f"2. {equation_2.__doc__}",
+            f"3. {equation_3.__doc__}",
+            f"4. {equation_4.__doc__}",
+            f"5. {equation_5.__doc__}",
+            f"0. Загрузить из файла",
+        ))
+        if func_to_plot[:1] == "1":
+            dichotomy_and_plot(equation_1, start_interval, end_interval, epsilon)
 
-        zero_2 = dichotomy(equation_2, start_interval, end_interval, epsilon)
-        plot(equation_2, start_interval, end_interval, zero_2)
+        elif func_to_plot[:1] == "2":
+            dichotomy_and_plot(equation_2, start_interval, end_interval, epsilon)
 
-        zero_3 = dichotomy(equation_3, start_interval, end_interval, epsilon)
-        plot(equation_3, start_interval, end_interval, zero_3)
+        elif func_to_plot[:1] == "3":
+            poly_values()
+            dichotomy_and_plot(equation_3, start_interval, end_interval, epsilon)
+
+        elif func_to_plot[:1] == "4":
+            dichotomy_and_plot(equation_4, start_interval, end_interval, epsilon)
+
+        elif func_to_plot[:1] == "5":
+            dichotomy_and_plot(equation_5, start_interval, end_interval, epsilon)
+
+        elif func_to_plot[:1] == "0":
+            st.markdown("🚧 under constructions 🚧")
+            st.button(f"Загрузить")
+            # dichotomy_and_plot(equation_loaded, start_interval, end_interval, epsilon)
+            st.markdown("🚧 under constructions 🚧")
 
 
 if __name__ == "__main__":

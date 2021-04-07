@@ -1,3 +1,12 @@
-streamlit==0.79.0
-numpy==1.20.1
-plotly==4.14.3
+# Streamlit
+streamlit==0.79.0  # https://streamlit.io/
+
+# data organisation and analysis
+pandas==1.2.3  # https://pandas.pydata.org/
+
+# math and statistic
+numpy==1.20.2  # https://numpy.org/
+
+# plots
+plotly==4.14.3  # https://plotly.com/python/
+matplotlib==3.4.1  # https://matplotlib.org/
