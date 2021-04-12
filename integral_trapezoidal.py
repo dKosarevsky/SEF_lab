@@ -1,5 +1,7 @@
 import streamlit as st
 import numpy as np
+import pandas as pd
+import base64
 import plotly.graph_objects as go
 import matplotlib.pyplot as plt
 
@@ -173,7 +175,7 @@ def equation_3(x, a1=1, a2=2, a3=3, a4=4, a5=5, a6=6, a7=7, a8=8, a9=9):
 
 
 def equation_4(x):
-    """x/2 - sin(x) + pi/6 - ((3**(1/2)) / 2)"""
+    """x/2 - sin(x) + π/6 - ((3^(1/2)) / 2)"""
     return x / 2 - np.sin(x) + np.pi / 6 - ((3 ** (1 / 2)) / 2)
 
 
@@ -212,16 +214,40 @@ def dichotomy(f, a, b, tol):
             return b
 
 
+def save_file(df, filename):
+    csv = df.to_csv()
+    b64 = base64.b64encode(csv.encode()).decode()  # some strings <-> bytes conversions necessary here
+    href = f'<a href="data:file/csv;base64,{b64}" download="{filename}.csv">Скачать .csv файл</a>'
+    st.markdown(href, unsafe_allow_html=True)
+
+
 def trapezoidal_main(equation, start, end, intervals):
     result = trapezoidal_rule(equation, start, end, intervals)
     st.write(f"Результат для {equation.__doc__} = {round(result, 5)}")
-    st.button(f"🚧 Сохранить 🚧")
+    df = pd.DataFrame({
+        "Функция": [equation.__doc__, ],
+        "Нижний предел": [start, ],
+        "Верхний предел": [end, ],
+        "Шаг": [intervals, ],
+    }).T
+
+    # st.write(df)
+    # st.dataframe(df)
+    save_file(df, "trapezoidal")
 
 
 def trapezoidal_p_main(equation, start, end, p):
     result = precision_trapezoidal_rule(equation, start, end, p)
     st.write(f"Результат для {equation.__doc__} = {round(result, 5)}")
-    st.button(f"🚧 Сохранить 🚧")
+    df = pd.DataFrame({
+        "Функция": [equation.__doc__, ],
+        "Нижний предел": [start, ],
+        "Верхний предел": [end, ],
+        "Точность": [p, ],
+    }).T
+
+    # st.write(df)
+    save_file(df, "trapezoidal_precision")
 
 
 def dichotomy_and_plot(equation, start, end, eps):
@@ -245,7 +271,7 @@ def poly_values():
         a7 = c7.number_input("a7:")
         a8 = c8.number_input("a8:")
         a9 = c9.number_input("a9:")
-        st.markdown("🚧 under constructions 🚧")
+        st.markdown("🚧 under constructions 🚧")  # TODO fix
 
 
 def main():
@@ -289,10 +315,16 @@ def main():
             trapezoidal_main(equation_3, lower_limit, upper_limit, sub_intervals)
 
         elif trapezoid[:1] == "0":
-            st.markdown("🚧 under constructions 🚧")
-            st.button(f"Загрузить")
+            data_file = st.file_uploader(
+                "Загрузите файл со значениями функции и аргумента:",
+                type=["csv", ]
+            )
+            if data_file and data_file.name[-3:] == "csv":
+                data_file = pd.read_csv(data_file)
+                st.write(data_file)
+
             # trapezoidal_main(equation_loaded, lower_limit, upper_limit, sub_intervals)
-            st.markdown("🚧 under constructions 🚧")
+            # st.markdown("🚧 under constructions 🚧")
 
     elif calc_type[:1] == "2":
         st.write(calc_type[3:])
@@ -318,10 +350,16 @@ def main():
             trapezoidal_p_main(equation_3, lower_limit, upper_limit, precision)
 
         elif trapezoid_p[:1] == "0":
-            st.markdown("🚧 under constructions 🚧")
-            st.button(f"Загрузить")
+            data_file = st.file_uploader(
+                "Загрузите файл со значениями функции и аргумента:",
+                type=["csv", ]
+            )
+            if data_file and data_file.name[-3:] == "csv":
+                data_file = pd.read_csv(data_file)
+                st.write(data_file)
+
             # trapezoidal_p_main(equation_loaded, lower_limit, upper_limit, sub_intervals)
-            st.markdown("🚧 under constructions 🚧")
+            # st.markdown("🚧 under constructions 🚧")
 
     elif calc_type[:1] == "3":
         st.write(calc_type[3:])
