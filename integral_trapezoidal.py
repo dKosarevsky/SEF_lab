@@ -426,7 +426,7 @@ def main():
             dichotomy_and_plot(equation_4, start_interval, end_interval, epsilon)
 
         elif func_to_plot[:1] == "0":
-            upload_and_print(dichotomy=True)
+            upload_and_print(dichotomy_=True)
 
 
 if __name__ == "__main__":
