@@ -273,9 +273,8 @@ def poly_values():
         a7 = c7.number_input("a7:")
         a8 = c8.number_input("a8:")
         a9 = c9.number_input("a9:")
-        st.markdown("🚧 under constructions 🚧")  # TODO fix!
 
-    return a1, a2, a3, a4, a5, a6, a7, a8, a9
+        return a1, a2, a3, a4, a5, a6, a7, a8, a9
 
 
 def upload_and_print(dichotomy_=False):
@@ -365,7 +364,11 @@ def main():
             trapezoidal_main(equation_2, lower_limit, upper_limit, sub_intervals)
 
         elif trapezoid[:1] == "3":
-            poly_values()
+            p_values = poly_values()
+
+            if p_values:
+                equation_3.__defaults__ = p_values
+
             trapezoidal_main(equation_3, lower_limit, upper_limit, sub_intervals)
 
         elif trapezoid[:1] == "0":
@@ -391,7 +394,11 @@ def main():
             trapezoidal_p_main(equation_2, lower_limit, upper_limit, precision)
 
         elif trapezoid_p[:1] == "3":
-            poly_values()
+            p_values = poly_values()
+
+            if p_values:
+                equation_3.__defaults__ = p_values
+
             trapezoidal_p_main(equation_3, lower_limit, upper_limit, precision)
 
         elif trapezoid_p[:1] == "0":
@@ -419,7 +426,11 @@ def main():
             dichotomy_and_plot(equation_2, start_interval, end_interval, epsilon)
 
         elif func_to_plot[:1] == "3":
-            poly_values()
+            p_values = poly_values()
+
+            if p_values:
+                equation_3.__defaults__ = p_values
+
             dichotomy_and_plot(equation_3, start_interval, end_interval, epsilon)
 
         elif func_to_plot[:1] == "4":
