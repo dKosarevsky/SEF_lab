@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 import base64
 import plotly.graph_objects as go
-import matplotlib.pyplot as plt
 
 
 def header():
@@ -126,7 +125,7 @@ def slice_area(function, x1, x2, max_error):
     return slice_area(function, x1, xm, max_error) + slice_area(function, xm, x2, max_error)
 
 
-def plot(func, a, b, zero):
+def plot(func, a, b, zero=None):
     """ отрисовка графика """
     x = np.arange(a, b, 0.001)
     y = [func(i) for i in x]
@@ -171,17 +170,12 @@ def equation_2(x):
 
 def equation_3(x, a1=1, a2=2, a3=3, a4=4, a5=5, a6=6, a7=7, a8=8, a9=9):
     """a1 * x^8 + a2 * x^7 + a3 * x^6 + a4 * x^5 + a5 * x^4 + a6 * x^3 + a7 * x^2 + a8 * x + a9"""
-    return a1 * x**8 + a2 * x**7 + a3 * x**6 + a4 * x**5 + a5 * x**4 + a6 * x**3 + a7 * x**2 + a8 * x + a9
+    return a1 * x ** 8 + a2 * x ** 7 + a3 * x ** 6 + a4 * x ** 5 + a5 * x ** 4 + a6 * x ** 3 + a7 * x ** 2 + a8 * x + a9
 
 
 def equation_4(x):
     """x/2 - sin(x) + π/6 - ((3^(1/2)) / 2)"""
     return x / 2 - np.sin(x) + np.pi / 6 - ((3 ** (1 / 2)) / 2)
-
-
-def equation_5(x, a1=-507.5, a2=5386.9, a3=11357.9):
-    """a1 * x^2 + a2 * x + a3"""
-    return a1 * x**2 + a2 * x + a3
 
 
 def dichotomy(f, a, b, tol):
@@ -224,6 +218,7 @@ def save_file(df, filename):
 def trapezoidal_main(equation, start, end, intervals):
     result = trapezoidal_rule(equation, start, end, intervals)
     st.write(f"Результат для {equation.__doc__} = {round(result, 5)}")
+
     df = pd.DataFrame({
         "Функция": [equation.__doc__, ],
         "Нижний предел": [start, ],
@@ -231,14 +226,13 @@ def trapezoidal_main(equation, start, end, intervals):
         "Шаг": [intervals, ],
     }).T
 
-    # st.write(df)
-    # st.dataframe(df)
     save_file(df, "trapezoidal")
 
 
 def trapezoidal_p_main(equation, start, end, p):
     result = precision_trapezoidal_rule(equation, start, end, p)
     st.write(f"Результат для {equation.__doc__} = {round(result, 5)}")
+
     df = pd.DataFrame({
         "Функция": [equation.__doc__, ],
         "Нижний предел": [start, ],
@@ -246,13 +240,21 @@ def trapezoidal_p_main(equation, start, end, p):
         "Точность": [p, ],
     }).T
 
-    # st.write(df)
     save_file(df, "trapezoidal_precision")
 
 
 def dichotomy_and_plot(equation, start, end, eps):
     zero = dichotomy(equation, start, end, eps)
     plot(equation, start, end, zero)
+
+    df = pd.DataFrame({
+        "Функция": [equation.__doc__, ],
+        "Начало интервала": [start, ],
+        "Конец интервала": [end, ],
+        "Эпсилон": [eps, ],
+    }).T
+
+    save_file(df, "dichotomy")
 
 
 def poly_values():
@@ -271,7 +273,59 @@ def poly_values():
         a7 = c7.number_input("a7:")
         a8 = c8.number_input("a8:")
         a9 = c9.number_input("a9:")
-        st.markdown("🚧 under constructions 🚧")  # TODO fix
+        st.markdown("🚧 under constructions 🚧")  # TODO fix!
+
+    return a1, a2, a3, a4, a5, a6, a7, a8, a9
+
+
+def upload_and_print(dichotomy_=False):
+    data_file = st.file_uploader(
+        "Загрузите файл со значениями функции и аргумента:",
+        type=["csv", ]
+    )
+    if data_file and data_file.name[-3:] == "csv":
+        data_file = pd.read_csv(data_file)
+
+    ch1, ch2 = st.beta_columns(2)
+    table_ = ch1.checkbox("Показать таблицу")
+    plot_ = ch2.checkbox("Показать график")
+
+    if table_:
+        st.write(data_file)
+
+    func_str = data_file.iloc[0, 1]
+    start = float(data_file.iloc[1, 1])
+    end = float(data_file.iloc[2, 1])
+
+    if dichotomy_:
+        epsilon = float(data_file.iloc[3, 1])
+
+    if plot_:
+        try:
+            if func_str == equation_1.__doc__:
+                if dichotomy_:
+                    dichotomy_and_plot(equation_1, start, end, epsilon)
+                else:
+                    plot(equation_1, start, end)
+            elif func_str == equation_2.__doc__:
+                if dichotomy_:
+                    dichotomy_and_plot(equation_2, start, end, epsilon)
+                else:
+                    plot(equation_2, start, end)
+            elif func_str == equation_3.__doc__:
+                if dichotomy_:
+                    dichotomy_and_plot(equation_3, start, end, epsilon)
+                else:
+                    plot(equation_3, start, end)
+            elif func_str == equation_4.__doc__:
+                if dichotomy_:
+                    dichotomy_and_plot(equation_4, start, end, epsilon)
+                else:
+                    plot(equation_4, start, end)
+            else:
+                st.info("Такую функцию мы пока не умеем рисовать, но обязательно научимся.")
+        except IndexError:
+            st.warning("Содержимое файла не соответствует формату, проверьте данные.")
 
 
 def main():
@@ -315,16 +369,7 @@ def main():
             trapezoidal_main(equation_3, lower_limit, upper_limit, sub_intervals)
 
         elif trapezoid[:1] == "0":
-            data_file = st.file_uploader(
-                "Загрузите файл со значениями функции и аргумента:",
-                type=["csv", ]
-            )
-            if data_file and data_file.name[-3:] == "csv":
-                data_file = pd.read_csv(data_file)
-                st.write(data_file)
-
-            # trapezoidal_main(equation_loaded, lower_limit, upper_limit, sub_intervals)
-            # st.markdown("🚧 under constructions 🚧")
+            upload_and_print()
 
     elif calc_type[:1] == "2":
         st.write(calc_type[3:])
@@ -350,16 +395,7 @@ def main():
             trapezoidal_p_main(equation_3, lower_limit, upper_limit, precision)
 
         elif trapezoid_p[:1] == "0":
-            data_file = st.file_uploader(
-                "Загрузите файл со значениями функции и аргумента:",
-                type=["csv", ]
-            )
-            if data_file and data_file.name[-3:] == "csv":
-                data_file = pd.read_csv(data_file)
-                st.write(data_file)
-
-            # trapezoidal_p_main(equation_loaded, lower_limit, upper_limit, sub_intervals)
-            # st.markdown("🚧 under constructions 🚧")
+            upload_and_print()
 
     elif calc_type[:1] == "3":
         st.write(calc_type[3:])
@@ -374,7 +410,6 @@ def main():
             f"2. {equation_2.__doc__}",
             f"3. {equation_3.__doc__}",
             f"4. {equation_4.__doc__}",
-            f"5. {equation_5.__doc__}",
             f"0. Загрузить из файла",
         ))
         if func_to_plot[:1] == "1":
@@ -390,14 +425,8 @@ def main():
         elif func_to_plot[:1] == "4":
             dichotomy_and_plot(equation_4, start_interval, end_interval, epsilon)
 
-        elif func_to_plot[:1] == "5":
-            dichotomy_and_plot(equation_5, start_interval, end_interval, epsilon)
-
         elif func_to_plot[:1] == "0":
-            st.markdown("🚧 under constructions 🚧")
-            st.button(f"Загрузить")
-            # dichotomy_and_plot(equation_loaded, start_interval, end_interval, epsilon)
-            st.markdown("🚧 under constructions 🚧")
+            upload_and_print(dichotomy=True)
 
 
 if __name__ == "__main__":
