@@ -91,7 +91,7 @@ def precision_trapezoidal_rule(func, low_lim: float, up_lim: float, max_err: flo
 
     # выполняем интеграцию
     x = low_lim
-    for interval in range(intervals):
+    for _ in range(intervals):
         # добавляем область трапеции для этого среза
         total += slice_area(func, x, x + dx, max_err)
 
@@ -179,7 +179,6 @@ def equation_4(x):
 
 
 def dichotomy(f, a, b, tol):
-    niter = 0
     inc = []
     y = (a + b) / 2
 
@@ -188,7 +187,6 @@ def dichotomy(f, a, b, tol):
             x = (a + b) / 2
             inc.append(abs(x - y))
             y = x
-            niter += 1
             if f(a) * f(x) <= 0:
                 b = x
             else:
