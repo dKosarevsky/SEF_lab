@@ -158,6 +158,32 @@ def plot(func, a, b, zero=None):
     st.markdown("---")
 
 
+def plot_by_points(x_arr, y_arr):
+    """ отрисовка графика по точкам"""
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=x_arr,
+        y=y_arr,
+        mode='lines',
+    ))
+    fig.update_layout(
+        title_text=f"График функции",
+        xaxis_title='x',
+        yaxis_title='f(x)',
+        showlegend=False
+    )
+    st.write(fig)
+    st.markdown("---")
+
+
+def get_plot_points(func, start, end):
+    x_points = np.arange(start, end, 0.1).tolist()
+    y_points = [func(i) for i in x_points]
+
+    return x_points, y_points
+
+
 def equation_1(x):
     """sin(x)"""
     return np.sin(x)
@@ -214,43 +240,62 @@ def save_file(df, filename):
 
 
 def trapezoidal_main(equation, start, end, intervals):
+    x, y = get_plot_points(equation, start, end)
+
+    plot_ = st.checkbox("Отобразить график")
+    if plot_:
+        plot_by_points(x, y)
+
     result = trapezoidal_rule(equation, start, end, intervals)
     st.write(f"Результат для {equation.__doc__} = {round(result, 5)}")
 
     df = pd.DataFrame({
-        "Функция": [equation.__doc__, ],
-        "Нижний предел": [start, ],
-        "Верхний предел": [end, ],
-        "Шаг": [intervals, ],
-    }).T
+        "Значения x": x,
+        "Значения y": y,
+        "Нижний предел": start,
+        "Верхний предел": end,
+        "Шаг": intervals,
+        "Функция": equation.__doc__,
+    })
 
     save_file(df, "trapezoidal")
 
 
 def trapezoidal_p_main(equation, start, end, p):
+    x, y = get_plot_points(equation, start, end)
+
+    plot_ = st.checkbox("Отобразить график")
+    if plot_:
+        plot_by_points(x, y)
+
     result = precision_trapezoidal_rule(equation, start, end, p)
     st.write(f"Результат для {equation.__doc__} = {round(result, 5)}")
 
     df = pd.DataFrame({
-        "Функция": [equation.__doc__, ],
-        "Нижний предел": [start, ],
-        "Верхний предел": [end, ],
-        "Точность": [p, ],
-    }).T
+        "Значения x": x,
+        "Значения y": y,
+        "Нижний предел": start,
+        "Верхний предел": end,
+        "Точность": p,
+        "Функция": equation.__doc__,
+    })
 
     save_file(df, "trapezoidal_precision")
 
 
 def dichotomy_and_plot(equation, start, end, eps):
+    x, y = get_plot_points(equation, start, end)
     zero = dichotomy(equation, start, end, eps)
     plot(equation, start, end, zero)
 
     df = pd.DataFrame({
-        "Функция": [equation.__doc__, ],
-        "Начало интервала": [start, ],
-        "Конец интервала": [end, ],
-        "Эпсилон": [eps, ],
-    }).T
+        "Значения x": x,
+        "Значения y": y,
+        "Начало интервала": start,
+        "Конец интервала": end,
+        "Эпсилон": eps,
+        "Функция": equation.__doc__,
+    })
 
     save_file(df, "dichotomy")
 
@@ -262,15 +307,15 @@ def poly_values():
         c1, c2, c3 = st.beta_columns(3)
         c4, c5, c6 = st.beta_columns(3)
         c7, c8, c9 = st.beta_columns(3)
-        a1 = c1.number_input("a1:")
-        a2 = c2.number_input("a2:")
-        a3 = c3.number_input("a3:")
-        a4 = c4.number_input("a4:")
-        a5 = c5.number_input("a5:")
-        a6 = c6.number_input("a6:")
-        a7 = c7.number_input("a7:")
-        a8 = c8.number_input("a8:")
-        a9 = c9.number_input("a9:")
+        a1 = c1.number_input("a1:", value=1)
+        a2 = c2.number_input("a2:", value=1)
+        a3 = c3.number_input("a3:", value=1)
+        a4 = c4.number_input("a4:", value=1)
+        a5 = c5.number_input("a5:", value=1)
+        a6 = c6.number_input("a6:", value=1)
+        a7 = c7.number_input("a7:", value=1)
+        a8 = c8.number_input("a8:", value=1)
+        a9 = c9.number_input("a9:", value=1)
 
         return a1, a2, a3, a4, a5, a6, a7, a8, a9
 
@@ -283,46 +328,26 @@ def upload_and_print(dichotomy_=False):
     if data_file and data_file.name[-3:] == "csv":
         data_file = pd.read_csv(data_file)
 
-    ch1, ch2 = st.beta_columns(2)
-    table_ = ch1.checkbox("Показать таблицу")
-    plot_ = ch2.checkbox("Показать график")
+        ch1, ch2 = st.beta_columns(2)
+        table_ = ch1.checkbox("Показать таблицу")
+        plot_ = ch2.checkbox("Показать график")
 
-    if table_:
-        st.write(data_file)
+        if table_:
+            st.dataframe(data_file)
 
-    func_str = data_file.iloc[0, 1]
-    start = float(data_file.iloc[1, 1])
-    end = float(data_file.iloc[2, 1])
-
-    if dichotomy_:
-        epsilon = float(data_file.iloc[3, 1])
-
-    if plot_:
         try:
-            if func_str == equation_1.__doc__:
-                if dichotomy_:
-                    dichotomy_and_plot(equation_1, start, end, epsilon)
-                else:
-                    plot(equation_1, start, end)
-            elif func_str == equation_2.__doc__:
-                if dichotomy_:
-                    dichotomy_and_plot(equation_2, start, end, epsilon)
-                else:
-                    plot(equation_2, start, end)
-            elif func_str == equation_3.__doc__:
-                if dichotomy_:
-                    dichotomy_and_plot(equation_3, start, end, epsilon)
-                else:
-                    plot(equation_3, start, end)
-            elif func_str == equation_4.__doc__:
-                if dichotomy_:
-                    dichotomy_and_plot(equation_4, start, end, epsilon)
-                else:
-                    plot(equation_4, start, end)
-            else:
-                st.info("Такую функцию мы пока не умеем рисовать, но обязательно научимся.")
-        except IndexError:
-            st.warning("Содержимое файла не соответствует формату, проверьте данные.")
+            x = data_file["Значения x"]
+            y = data_file["Значения y"]
+
+            if plot_:
+                plot_by_points(x, y)
+
+                if st.checkbox("Показать точки"):
+                    st.code(f"x: {x}")
+                    st.code(f"y: {y}")
+
+        except Exception as e:
+            st.warning(f"Ошибочка подъехала: {e}. Проверь данные.")
 
 
 def main():
@@ -355,6 +380,7 @@ def main():
             f"3. {equation_3.__doc__}",
             f"0. Загрузить из файла",
         ))
+
         if trapezoid[:1] == "1":
             trapezoidal_main(equation_1, lower_limit, upper_limit, sub_intervals)
 
@@ -385,6 +411,7 @@ def main():
             f"3. {equation_3.__doc__}",
             f"0. Загрузить из файла",
         ))
+
         if trapezoid_p[:1] == "1":
             trapezoidal_p_main(equation_1, lower_limit, upper_limit, precision)
 
